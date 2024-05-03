@@ -1,46 +1,46 @@
-
 import streamlit as st
 import pickle
+import numpy as np
 import pandas as pd
 
-# Load the Random Forest model
 RF = pickle.load(open('RF_final_03-05-2024.pkl','rb')) 
-
-# Load the DataFrame
 df1 = pickle.load(open('df1_03-05-2024.pkl','rb'))
 
-# Streamlit app title and header
+# Function to decode encoded values
+def decode_value(column_name, encoded_value):
+    if column_name == 'Car_Name':
+        return df1['Car_Name'].unique()[encoded_value]
+    elif column_name == 'Model':
+        return df1['Model'].unique()[encoded_value]
+    elif column_name == 'Type':
+        return df1['Type'].unique()[encoded_value]
+    elif column_name == 'year':
+        return df1['year'].unique()[encoded_value]
+    elif column_name == 'fuel':
+        return df1['fuel'].unique()[encoded_value]
+    elif column_name == 'seller_type':
+        return df1['seller_type'].unique()[encoded_value]
+    elif column_name == 'transmission':
+        return df1['transmission'].unique()[encoded_value]
+    elif column_name == 'owner':
+        return df1['owner'].unique()[encoded_value]
+    else:
+        return None
+
 st.title('Used Car Price Prediction')
 st.header('Fill The Used Car Details to Predict The Price')
 
-# Dropdown for selecting car name, model, type, year, fuel, seller type, transmission, and owner
-Car_Name = st.selectbox('Car Name', df1['Car_Name'].unique())
-Model = st.selectbox('Model', df1['Model'].unique())
-Type = st.selectbox('Type', df1['Type'].unique())
-Year = st.selectbox('Year', df1['year'].unique())
-Km_Driven = st.number_input('KM Driven (between 1.0 - 806599.0)')
-Fuel = st.selectbox('Fuel', df1['fuel'].unique())
-Seller_Type = st.selectbox('Seller Type', df1['seller_type'].unique())
-Transmission = st.selectbox('Transmission', df1['transmission'].unique())
-Owner = st.selectbox('Owner', df1['owner'].unique())
+Car_Name=st.selectbox('Car_Name', [decode_value('Car_Name', i) for i in range(len(df1['Car_Name'].unique()))])
+Model=st.selectbox('Model', [decode_value('Model', i) for i in range(len(df1['Model'].unique()))])
+Type=st.selectbox('Type', [decode_value('Type', i) for i in range(len(df1['Type'].unique()))])
+year=st.selectbox('year', [decode_value('year', i) for i in range(len(df1['year'].unique()))])
+km_driven=st.number_input('KM(between 1.0 - 806599.0)')
+fuel=st.selectbox('fuel', [decode_value('fuel', i) for i in range(len(df1['fuel'].unique()))])
+seller_type=st.selectbox('seller_type', [decode_value('seller_type', i) for i in range(len(df1['seller_type'].unique()))])
+transmission=st.selectbox('transmission', [decode_value('transmission', i) for i in range(len(df1['transmission'].unique()))])
+owner=st.selectbox('owner', [decode_value('owner', i) for i in range(len(df1['owner'].unique()))])
 
-# Function to preprocess user input data and make predictions
-def preprocess_input_data(Car_Name, Model, Type, Year, Km_Driven, Fuel, Seller_Type, Transmission, Owner):
-    input_data = pd.DataFrame({
-        'Car_Name': [Car_Name],
-        'Model': [Model],
-        'Type': [Type],
-        'year': [Year],
-        'km_driven': [Km_Driven],
-        'fuel': [Fuel],
-        'seller_type': [Seller_Type],
-        'transmission': [Transmission],
-        'owner': [Owner]
-    })
-    return input_data
-
-# Predict button
 if st.button('Predict'):
-    input_data = preprocess_input_data(Car_Name, Model, Type, Year, Km_Driven, Fuel, Seller_Type, Transmission, Owner)
+    input_data = np.array([Car_Name, Model, Type, year, km_driven, fuel, seller_type, transmission, owner]).reshape(1, -1)
     prediction = RF.predict(input_data)
-    st.success('The predicted price of the used car is ₹{}'.format(prediction[0]))
+    st.write('The predicted price of the used car is:', prediction[0])
