@@ -4,6 +4,7 @@ import numpy as np
 
 # Load the trained model and dataframe
 RF = pickle.load(open('RF_final_03-05-2024.pkl','rb'))
+df1 = pickle.load(open('df1_03-05-2024.pkl','rb'))
 
 # Title and header
 st.title('Used Car Price Prediction')
