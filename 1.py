@@ -1,3 +1,28 @@
+import streamlit as st
+import pickle
+import numpy as np
+
+# Load the trained model and dataframe
+RF = pickle.load(open('RF_final_03-05-2024.pkl','rb')) 
+df1 = pickle.load(open('df1_03-05-2024.pkl','rb'))
+
+# Title and header
+st.title('Used Car Price Prediction')
+st.header('Fill The Used Car Details to Predict The Price')
+
+# User inputs
+Car_Name=st.selectbox('Car_Name', df1['Car_Name'].unique())
+Model=st.selectbox('Model', df1['Model'].unique())
+Type=st.selectbox('Type', df1['Type'].unique())
+year=st.selectbox('year', df1['year'].unique())
+km_driven=st.number_input('KM(between 1.0 - 806599.0)')
+fuel=st.selectbox('fuel', df1['fuel'].unique())
+seller_type=st.selectbox('seller_type', df1['seller_type'].unique())
+transmission=st.selectbox('transmission', df1['transmission'].unique())
+owner=st.selectbox('owner', df1['owner'].unique())
+
+
+
 # Predict button
 if st.button('Predict'):
     try:
