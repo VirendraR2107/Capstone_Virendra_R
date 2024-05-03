@@ -23,7 +23,7 @@ owner=st.selectbox('owner', df1['owner'].unique())
 
 
 
-if st.button('Predict'):
+if st.button('Car_Name'):
     if Car_Name == 'Maruti':
         Car_Name=5
     elif Car_Name == 'Hyundai':
