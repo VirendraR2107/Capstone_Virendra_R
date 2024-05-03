@@ -1,10 +1,11 @@
 import streamlit as st
 import pickle
 import numpy as np
+import pandas as pd  # Add this line to import pandas
 
 # Load the trained model and dataframe
 RF = pickle.load(open('RF_final_03-05-2024.pkl','rb'))
-df1 = pickle.load(open('df1_03-05-2024.pkl','rb'))
+df1 = pickle.load(open('df1_03-05-2024.pkl','rb'))  # Add this line to load df1
 
 # Title and header
 st.title('Used Car Price Prediction')
