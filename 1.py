@@ -53,4 +53,4 @@ if st.button('Predict'):
         else:
             st.write("Please enter valid values for all input fields.")
     except Exception as e:
-        st.write("An
+        st.write("An error occurred:", e)
