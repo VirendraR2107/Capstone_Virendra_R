@@ -1,26 +1,3 @@
-import streamlit as st
-import pickle
-import numpy as np
-
-# Load the trained model and dataframe
-RF = pickle.load(open('RF_final_03-05-2024.pkl','rb')) 
-df1 = pickle.load(open('df1_03-05-2024.pkl','rb'))
-
-# Title and header
-st.title('Used Car Price Prediction')
-st.header('Fill The Used Car Details to Predict The Price')
-
-# User inputs
-Car_Name=st.selectbox('Car_Name', df1['Car_Name'].unique())
-Model=st.selectbox('Model', df1['Model'].unique())
-Type=st.selectbox('Type', df1['Type'].unique())
-year=st.selectbox(year, df1['year'].unique())
-km_driven=st.number_input('KM(between 1.0 - 806599.0)')
-fuel=st.selectbox('fuel', df1['fuel'].unique())
-seller_type=st.selectbox('seller_type', df1['seller_type'].unique())
-transmission=st.selectbox('transmission', df1['transmission'].unique())
-owner=st.selectbox('owner', df1['owner'].unique())
-
 # Predict button
 if st.button('Predict'):
     try:
@@ -32,7 +9,12 @@ if st.button('Predict'):
         Car_Name = car_name_map.get(Car_Name, 'Enter Correct Car_Name')
         Model = model_map.get(Model, 'Enter Correct Model')
         Type = type_map.get(Type, 'Enter Correct Type')
-        year = int(year) if year.isdigit() else 'Select Valid Year'
+        
+        try:
+            year = int(year) if year.isdigit() and int(year) in df1['year'].unique() else 'Select Valid Year'
+        except ValueError:
+            year = 'Select Valid Year'
+        
         fuel_map = {'Diesel': 1, 'Petrol': 4, 'CNG': 0, 'LPG': 3, 'Electric': 2}
         seller_type_map = {'Individual': 1, 'Dealer': 0, 'Trustmark Dealer': 2}
         transmission_map = {'Manual': 1, 'Automatic': 0}
@@ -43,12 +25,16 @@ if st.button('Predict'):
         transmission = transmission_map.get(transmission, 'Select Valid Type')
         owner = owner_map.get(owner, 'Select Valid Category')
         
-        # Make prediction
-        input_data = np.array([[Car_Name, Model, Type, year, km_driven, fuel, seller_type, transmission, owner]])
-        prediction = RF.predict(input_data)
-        
-        # Display prediction
-        prediction_text = f"Predicted Price: {prediction[0]}"
-        st.write(prediction_text)
+        # Check if all inputs are valid
+        if all(isinstance(val, int) for val in [Car_Name, Model, Type, year, fuel, seller_type, transmission, owner]):
+            # Make prediction
+            input_data = np.array([[Car_Name, Model, Type, year, km_driven, fuel, seller_type, transmission, owner]])
+            prediction = RF.predict(input_data)
+            
+            # Display prediction
+            prediction_text = f"Predicted Price: {prediction[0]}"
+            st.write(prediction_text)
+        else:
+            st.write("Please enter valid values for all input fields.")
     except Exception as e:
         st.write("An error occurred:", e)
